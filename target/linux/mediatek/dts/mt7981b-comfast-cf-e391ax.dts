@@ -4,6 +4,7 @@
 
 #include "mt7981b.dtsi"
 
+
 / {
 	model = "COMFAST CF-E391AX";
 	compatible = "comfast,cf-e391ax", "mediatek,mt7981";
@@ -26,15 +27,8 @@
 		device_type = "memory";
 	};
 
-	/// TODO: check that these buttons exist
 	gpio-keys {
 		compatible = "gpio-keys";
-
-		wps {
-			label = "wps";
-			linux,code = <KEY_WPS_BUTTON>;
-			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
-		};
 
 		reset {
 			label = "reset";
@@ -64,25 +58,12 @@
 			function = LED_FUNCTION_STATUS;
 		};
 	};
-
-	/// TODO: check if required (overlap with ethernet + may not be handled)
-	/*hnat: hnat@15100000 {
-	compatible = "mediatek,mtk-hnat_v4";
-	reg = <0 0x15100000 0 0x80000>;
-	resets = <&ethsys 0>;
-	reset-names = "mtketh";
-	status = "okay";
-	
-	mtketh-lan = "eth0"; 
-	mtketh-wan = "eth1";
-	mtketh-max-gmac = <2>;
-	};*/
 };
 
 
 &eth {
 	status = "okay";
-	#reset-cells = <1>; //ADDITION
+	#reset-cells = <1>;
 
 	/* LAN 1G - YT8531 */
 	gmac0: mac@0 {
@@ -92,8 +73,8 @@
 		phy-mode = "sgmii";
 		nvmem-cells = <&macaddr_factory_e000 0>;
 		nvmem-cell-names = "mac-address";
-		managed = "in-band-status"; //ADDITION
-		max-speed = <1000>; //ADDITION
+		managed = "in-band-status";
+		max-speed = <1000>;
 	};
 
 	/* WAN 2.5G - GPY211 */
@@ -130,10 +111,10 @@
 	};
 };
 
+
 &ethsys {
     status = "okay";
 	
-	//ADDITION
 	reset-controller {
 		compatible = "ti,syscon-reset";
 		#reset-cells = <0x01>;
@@ -183,15 +164,12 @@
 		reg = <0>;
 		spi-max-frequency = <52000000>;
 
-		/// TODO: check if spi-cal required
-		/*
 		spi-cal-enable;
 		spi-cal-mode = "read-data";
 		spi-cal-datalen = <7>;
-		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>;
+		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>; //SPINAND
 		spi-cal-addrlen = <5>;
 		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
-		*/
 
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
@@ -232,8 +210,7 @@
 
 					macaddr_factory_e000: macaddr@e000 {
 						compatible = "mac-base";
-						// MAC is valid: dd if=mtd3_Factory.bin  bs=1 skip=0xe000 count=6 | hexdump -C
-						// other valid MAC: 0x4 and 0x8000
+						// other valid MAC at 0x4 and 0x8000
 						reg = <0xe000 0x6>;
 						#nvmem-cell-cells = <1>;
 					};
@@ -255,16 +232,16 @@
 	};
 };
 
-// serial@11002000 is a bit different in dump but shouldn't be a problem
+
 &uart0 {
 	status = "okay";
 };
 
 
-/// TODO: check if required, because not explicitly disabled in mt7981b
 &watchdog {
 	status = "okay";
 };
+
 
 &wifi {
 	status = "okay";
@@ -272,12 +249,12 @@
 	nvmem-cell-names = "eeprom";
 };
 
-/// TODO: check if USB present
+
 &xhci {
 	status = "disabled";
 };
 
-/// TODO: check if USB is present
+
 &usb_phy {
 	status = "disabled";
 };
